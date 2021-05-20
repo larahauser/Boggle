@@ -36,16 +36,20 @@ const ctx = canvas.getContext("2d");
 function display() {
   const gap = 10;
   const cube = 50;
-  ctx.fillStyle = "orange";
-  ctx.fillRect(0, 0, gap * 5 + cube * 4, gap * 5 + cube * 4);
+  ctx.strokeStyle = "darkorange";
+  ctx.fillStyle = "darkorange";
+  // ctx.fillRect(0, 0, gap * 5 + cube * 4, gap * 5 + cube * 4);
+  roundRect(ctx, 0, 0, gap * 5 + cube * 4, gap * 5 + cube * 4, 10, true, false);
   ctx.fillStyle = "black";
 
   let x = gap;
   let y = gap;
   rack.forEach((row) => {
     row.forEach((letter) => {
+      ctx.strokeStyle = "white";
       ctx.fillStyle = "white";
-      ctx.fillRect(x, y, cube, cube);
+      // ctx.fillRect(x, y, cube, cube);
+      roundRect(ctx, x, y, cube, cube, 5, true, false);
       ctx.fillStyle = "black";
       ctx.font = "bold 40px helvetica";
       ctx.fillText(letter, x + 12, y + cube - 11);
@@ -66,6 +70,33 @@ function shake() {
       );
     }
   }
+}
+
+// http://js-bits.blogspot.com/2010/07/canvas-rounded-corner-rectangles.html
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof stroke == "undefined" ) {
+    stroke = true;
+  }
+  if (typeof radius === "undefined") {
+    radius = 5;
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  if (stroke) {
+    ctx.stroke();
+  }
+  if (fill) {
+    ctx.fill();
+  }        
 }
 
 // https://stackoverflow.com/a/2450976
