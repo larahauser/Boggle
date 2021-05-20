@@ -22,6 +22,13 @@ let rack = [
   ["E", "E", "O", "A"],
   ["Y", "S", "E", "P"],
 ];
+let visited = [
+  [false, false, false, false],
+  [false, false, false, false],
+  [false, false, false, false],
+  [false, false, false, false],
+];
+let found = [];
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -40,8 +47,8 @@ function display() {
       ctx.fillStyle = "white";
       ctx.fillRect(x, y, cube, cube);
       ctx.fillStyle = "black";
-      ctx.font = "45px helvetica";
-      ctx.fillText(letter, x + 10, y + cube - 10);
+      ctx.font = "bold 40px helvetica";
+      ctx.fillText(letter, x + 12, y + cube - 11);
       x += cube + gap;
     });
     y += cube + gap;
@@ -83,8 +90,58 @@ function shuffle(array) {
 }
 
 function rattle() {
-    shake();
-    display();
+  shake();
+  display();
+}
+function isWord(s) {
+  return words.indexOf(`\n${s}\n`) > -1;
+}
+
+function isPrefix(s) {
+  return words.indexOf(`\n${s}`) > -1;
+}
+
+function solve() {
+  found = [];
+  for (let i = 0; i < rack.length; i++) {
+    for (let j = 0; j < rack.length; j++) {
+      traverse("", i, j);
+    }
+  }
+  found = [...new Set(found)];
+  found.sort((a, b) => b.length - a.length);
+  let answers = document.getElementById("answers");
+  answers.innerHTML = found.join("<br>");
+}
+
+function traverse(prefix, i, j) {
+  // Dont go off the grid
+  if (i < 0 || i > 3 || j < 0 || j > 3) {
+    return;
+  }
+  // Cant reuse letters
+  if (visited[i][j]) {
+    return;
+  }
+  const s = prefix + rack[i][j];
+  if (isWord(s) && s.length > 3) {
+    found.push(s);
+  }
+  if (isPrefix(s)) {
+    visited[i][j] = true;
+    for (let x = i - 1; x <= i + 1; x++) {
+      for (let y = j - 1; y <= j + 1; y++) {
+        traverse(s, x, y);
+      }
+    }
+    visited[i][j] = false;
+  }
 }
 
 rattle();
+console.log(words.length);
+// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
+// console.log(`isWord(ARDVARK) ${isWord('ARDVARK')})`)
+// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
+// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
+// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
