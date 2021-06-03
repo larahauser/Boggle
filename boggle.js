@@ -1,20 +1,20 @@
 let cubes = [
-  "NEIUSE",
-  "LRHZNN",
-  "ETTRYL",
-  "FKAPFS",
-  "YIDSTT",
-  "QIMNHU",
-  "STOSIE",
-  "SOACPH",
-  "AEAGEN",
-  "HEENWG",
-  "WOOTAT",
-  "REVLDY",
-  "THRVEW",
-  "REILXD",
-  "OUMCIT",
-  "JOOBBA",
+  ["N", "E", "I", "U", "S", "E"],
+  ["L", "R", "H", "Z", "N", "N"],
+  ["E", "T", "T", "R", "Y", "L"],
+  ["F", "K", "A", "P", "F", "S"],
+  ["Y", "I", "D", "S", "T", "T"],
+  ["Qu", "I", "M", "N", "H", "U"],
+  ["S", "T", "O", "S", "I", "E"],
+  ["S", "O", "A", "C", "P", "H"],
+  ["A", "E", "A", "G", "E", "N"],
+  ["H", "E", "E", "N", "W", "G"],
+  ["W", "O", "O", "T", "A", "T"],
+  ["R", "E", "V", "L", "D", "Y"],
+  ["T", "H", "R", "V", "E", "W"],
+  ["R", "E", "I", "L", "X", "D"],
+  ["O", "U", "M", "C", "I", "T"],
+  ["J", "O", "O", "B", "B", "A"],
 ];
 let rack = [
   ["R", "N", "E", "I"],
@@ -48,11 +48,17 @@ function display() {
     row.forEach((letter) => {
       ctx.strokeStyle = "white";
       ctx.fillStyle = "white";
-      // ctx.fillRect(x, y, cube, cube);
       roundRect(ctx, x, y, cube, cube, 5, true, false);
       ctx.fillStyle = "black";
-      ctx.font = "bold 40px helvetica";
-      ctx.fillText(letter, x + 12, y + cube - 11);
+      let yoffset = cube - 11;
+      if (letter === "Qu") {
+        ctx.font = "bold 30px helvetica";
+        yoffset = cube - 15;
+      } else {
+        ctx.font = "bold 40px helvetica";
+      }
+      const xoffset = (cube - ctx.measureText(letter).width) / 2;
+      ctx.fillText(letter, x + xoffset, y + yoffset);
       x += cube + gap;
     });
     y += cube + gap;
@@ -65,16 +71,16 @@ function shake() {
   shuffle(cubes);
   for (let i = 0; i < rack.length; i++) {
     for (let j = 0; j < rack.length; j++) {
-      rack[i][j] = cubes[i * 4 + j].charAt(
-        Math.floor(Math.random() * cubes[i * 4 + j].length)
-      );
+      rack[i][j] =
+        cubes[i * 4 + j][Math.floor(Math.random() * cubes[i * 4 + j].length)];
     }
   }
+  document.getElementById("answers").innerHTML = "";
 }
 
 // http://js-bits.blogspot.com/2010/07/canvas-rounded-corner-rectangles.html
 function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-  if (typeof stroke == "undefined" ) {
+  if (typeof stroke == "undefined") {
     stroke = true;
   }
   if (typeof radius === "undefined") {
@@ -96,7 +102,7 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
   }
   if (fill) {
     ctx.fill();
-  }        
+  }
 }
 
 // https://stackoverflow.com/a/2450976
@@ -141,8 +147,7 @@ function solve() {
   }
   found = [...new Set(found)];
   found.sort((a, b) => b.length - a.length);
-  let answers = document.getElementById("answers");
-  answers.innerHTML = found.join("<br>");
+  document.getElementById("answers").innerHTML = found.join("<br>");
 }
 
 function traverse(prefix, i, j) {
@@ -154,7 +159,7 @@ function traverse(prefix, i, j) {
   if (visited[i][j]) {
     return;
   }
-  const s = prefix + rack[i][j];
+  const s = (prefix + rack[i][j]).toUpperCase();
   if (isWord(s) && s.length > 3) {
     found.push(s);
   }
@@ -170,7 +175,7 @@ function traverse(prefix, i, j) {
 }
 
 rattle();
-console.log(words.length);
+// console.log(words.length);
 // console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
 // console.log(`isWord(ARDVARK) ${isWord('ARDVARK')})`)
 // console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
