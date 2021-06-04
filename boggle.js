@@ -1,4 +1,4 @@
-let cubes = [
+const cubes = [
   ["N", "E", "I", "U", "S", "E"],
   ["L", "R", "H", "Z", "N", "N"],
   ["E", "T", "T", "R", "Y", "L"],
@@ -16,21 +16,21 @@ let cubes = [
   ["O", "U", "M", "C", "I", "T"],
   ["J", "O", "O", "B", "B", "A"],
 ];
-let rack = [
+const rack = [
   ["R", "N", "E", "I"],
   ["C", "D", "H", "A"],
   ["E", "E", "O", "A"],
   ["Y", "S", "E", "P"],
 ];
-let visited = [
+const visited = [
   [false, false, false, false],
   [false, false, false, false],
   [false, false, false, false],
   [false, false, false, false],
 ];
 let found = [];
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = document.getElementById("canvas").getContext("2d");
+const flipCubes = true; // switch to control whether cubes can be sideways or upside down
 
 // Display rack to screen
 function display() {
@@ -50,7 +50,7 @@ function display() {
       ctx.fillStyle = "white";
       roundRect(ctx, x, y, cube, cube, 5, true, false);
       ctx.fillStyle = "black";
-      let yoffset = cube - 11;
+      let yoffset = cube - 10;
       if (letter === "Qu") {
         ctx.font = "bold 30px helvetica";
         yoffset = cube - 15;
@@ -58,7 +58,37 @@ function display() {
         ctx.font = "bold 40px helvetica";
       }
       const xoffset = (cube - ctx.measureText(letter).width) / 2;
-      ctx.fillText(letter, x + xoffset, y + yoffset);
+
+      // rotate cube text in a random orientation
+      if (flipCubes) {
+        ctx.save();
+        switch (randomInt(4)) {
+          case 0:
+            // no rotation
+            ctx.translate(x, y);
+            break;
+          case 1:
+            // 90 degress tilt left
+            ctx.translate(x, y + cube);
+            ctx.rotate(-Math.PI / 2);
+            break;
+          case 2:
+            // upside down
+            ctx.translate(x + cube, y + cube);
+            ctx.rotate(-Math.PI);
+            break;
+          case 3:
+            // 90 degress tilt right
+            ctx.translate(x + cube, y);
+            ctx.rotate(Math.PI / 2);
+            break;
+        }
+        ctx.fillText(letter, xoffset, yoffset);
+        ctx.restore();
+      } else {
+        ctx.fillText(letter, x + xoffset, y + yoffset);
+      }
+
       x += cube + gap;
     });
     y += cube + gap;
@@ -66,13 +96,16 @@ function display() {
   });
 }
 
+function randomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
 // Shuffle the cubes and place on rack
 function shake() {
   shuffle(cubes);
   for (let i = 0; i < rack.length; i++) {
     for (let j = 0; j < rack.length; j++) {
-      rack[i][j] =
-        cubes[i * 4 + j][Math.floor(Math.random() * cubes[i * 4 + j].length)];
+      rack[i][j] = cubes[i * 4 + j][randomInt(6)];
     }
   }
   document.getElementById("answers").innerHTML = "";
