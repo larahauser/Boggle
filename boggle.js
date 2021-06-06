@@ -1,26 +1,26 @@
 const cubes = [
-  ["N", "E", "I", "U", "S", "E"],
-  ["L", "R", "H", "Z", "N", "N"],
-  ["E", "T", "T", "R", "Y", "L"],
-  ["F", "K", "A", "P", "F", "S"],
-  ["Y", "I", "D", "S", "T", "T"],
-  ["Qu", "I", "M", "N", "H", "U"],
-  ["S", "T", "O", "S", "I", "E"],
-  ["S", "O", "A", "C", "P", "H"],
-  ["A", "E", "A", "G", "E", "N"],
-  ["H", "E", "E", "N", "W", "G"],
-  ["W", "O", "O", "T", "A", "T"],
-  ["R", "E", "V", "L", "D", "Y"],
-  ["T", "H", "R", "V", "E", "W"],
-  ["R", "E", "I", "L", "X", "D"],
-  ["O", "U", "M", "C", "I", "T"],
-  ["J", "O", "O", "B", "B", "A"],
+  ['N', 'E', 'I', 'U', 'S', 'E'],
+  ['L', 'R', 'H', 'Z', 'N', 'N'],
+  ['E', 'T', 'T', 'R', 'Y', 'L'],
+  ['F', 'K', 'A', 'P', 'F', 'S'],
+  ['Y', 'I', 'D', 'S', 'T', 'T'],
+  ['QU', 'I', 'M', 'N', 'H', 'U'],
+  ['S', 'T', 'O', 'S', 'I', 'E'],
+  ['S', 'O', 'A', 'C', 'P', 'H'],
+  ['A', 'E', 'A', 'G', 'E', 'N'],
+  ['H', 'E', 'E', 'N', 'W', 'G'],
+  ['W', 'O', 'O', 'T', 'A', 'T'],
+  ['R', 'E', 'V', 'L', 'D', 'Y'],
+  ['T', 'H', 'R', 'V', 'E', 'W'],
+  ['R', 'E', 'I', 'L', 'X', 'D'],
+  ['O', 'U', 'M', 'C', 'I', 'T'],
+  ['J', 'O', 'O', 'B', 'B', 'A'],
 ];
 const rack = [
-  ["R", "N", "E", "I"],
-  ["C", "D", "H", "A"],
-  ["E", "E", "O", "A"],
-  ["Y", "S", "E", "P"],
+  ['R', 'N', 'E', 'I'],
+  ['C', 'D', 'H', 'A'],
+  ['E', 'E', 'O', 'A'],
+  ['Y', 'S', 'E', 'P'],
 ];
 const visited = [
   [false, false, false, false],
@@ -29,27 +29,25 @@ const visited = [
   [false, false, false, false],
 ];
 let found = [];
-const ctx = document.getElementById("canvas").getContext("2d");
+const ctx = document.getElementById('canvas').getContext('2d');
+const GAP = 10;
+const CUBE = 50;
 
 // Display rack to screen
 function display() {
-  const gap = 10;
-  const cube = 50;
-  ctx.strokeStyle = "darkorange";
-  ctx.fillStyle = "darkorange";
-  // ctx.fillRect(0, 0, gap * 5 + cube * 4, gap * 5 + cube * 4);
-  roundRect(ctx, 0, 0, gap * 5 + cube * 4, gap * 5 + cube * 4, 10, true, false);
-  ctx.fillStyle = "black";
-
-  let x = gap;
-  let y = gap;
+  ctx.strokeStyle = 'darkorange';
+  ctx.fillStyle = 'darkorange';
+  roundRect(ctx, 0, 0, GAP * 5 + CUBE * 4, GAP * 5 + CUBE * 4, 10, true, false);
+  ctx.fillStyle = 'black';
+  let x = GAP;
+  let y = GAP;
   rack.forEach((row) => {
     row.forEach((letter) => {
-      drawCube(letter, x, y, cube);
-      x += cube + gap;
+      drawCube(letter, x, y);
+      x += CUBE + GAP;
     });
-    y += cube + gap;
-    x = gap;
+    y += CUBE + GAP;
+    x = GAP;
   });
 }
 
@@ -58,9 +56,7 @@ function degreesToRadians(d) {
   return d * Math.PI / 180;
 }
 
-function drawCube(letter, x, y, cube) {
-  // rotate cube text in a random orientation
-  ctx.save();
+function randomlyRotate(x, y) {
   switch (randomInt(4)) {
     case 0:
       // no rotation
@@ -69,37 +65,50 @@ function drawCube(letter, x, y, cube) {
       break;
     case 1:
       // 90 degress tilt left
-      ctx.translate(x, y + cube);
+      ctx.translate(x, y + CUBE);
       ctx.rotate(degreesToRadians(-90 + getSlightJiggle()));
       break;
     case 2:
       // upside down
-      ctx.translate(x + cube, y + cube);
+      ctx.translate(x + CUBE, y + CUBE);
       ctx.rotate(degreesToRadians(180 + getSlightJiggle()));
       break;
     case 3:
       // 90 degress tilt right
-      ctx.translate(x + cube, y);
+      ctx.translate(x + CUBE, y);
       ctx.rotate(degreesToRadians(90 + getSlightJiggle()));
       break;
   }
-  ctx.strokeStyle = "white";
-  ctx.fillStyle = "#E0E0E0";
-  roundRect(ctx, 0, 0, cube, cube, 5, true, false);
-  ctx.fillStyle = "white";
+}
+
+function drawCube(letter, x, y) {
+  // rotate cube text in a random orientation
+  ctx.save();
+  randomlyRotate(x, y);
+  // ctx.strokeStyle = 'white';
+  ctx.fillStyle = '#E0E0E0';
+  roundRect(ctx, 0, 0, CUBE, CUBE, 5, true, false);
+  ctx.fillStyle = 'white';
   ctx.beginPath();
   ctx.arc(25, 25, 24, 0, 2 * Math.PI);
   ctx.fill();
-  ctx.fillStyle = "black";
-  let yoffset = cube - 10;
-  if (letter === "Qu") {
-    ctx.font = "bold 30px helvetica";
-    yoffset = cube - 15;
+  ctx.fillStyle = 'black';
+  let yoffset = CUBE - 10;
+  if (letter === 'QU') {
+    letter = 'Qu';
+    ctx.font = 'bold 30px helvetica';
+    yoffset = CUBE - 15;
   } else {
-    ctx.font = "bold 40px helvetica";
+    ctx.font = 'bold 40px helvetica';
   }
-  const xoffset = (cube - ctx.measureText(letter).width) / 2;
+  const xoffset = (CUBE - ctx.measureText(letter).width) / 2;
   ctx.fillText(letter, xoffset, yoffset);
+  drawUnderline(letter);
+  ctx.restore();
+}
+
+// Some letters require an underline to disambiguate them
+function drawUnderline(letter) {
   switch (letter) {
     case 'M':
     case 'W':
@@ -107,7 +116,6 @@ function drawCube(letter, x, y, cube) {
       ctx.fillRect(15, 43, 20, 4);
       break;
   }
-  ctx.restore();
 }
 
 function getSlightJiggle() {
@@ -129,7 +137,7 @@ function randomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
-// Shuffle the cubes and place on rack
+// Shuffle the cubes, randomly place on rack and display
 function shake() {
   shuffle(cubes);
   for (let i = 0; i < rack.length; i++) {
@@ -137,15 +145,16 @@ function shake() {
       rack[i][j] = cubes[i * 4 + j][randomInt(6)];
     }
   }
-  document.getElementById("answers").innerHTML = "";
+  document.getElementById('answers').innerHTML = '';
+  display();
 }
 
 // http://js-bits.blogspot.com/2010/07/canvas-rounded-corner-rectangles.html
 function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-  if (typeof stroke == "undefined") {
+  if (typeof stroke == 'undefined') {
     stroke = true;
   }
-  if (typeof radius === "undefined") {
+  if (typeof radius === 'undefined') {
     radius = 5;
   }
   ctx.beginPath();
@@ -188,10 +197,6 @@ function shuffle(array) {
   return array;
 }
 
-function rattle() {
-  shake();
-  display();
-}
 function isWord(s) {
   return words.indexOf(`\n${s}\n`) > -1;
 }
@@ -204,24 +209,24 @@ function solve() {
   found = [];
   for (let i = 0; i < rack.length; i++) {
     for (let j = 0; j < rack.length; j++) {
-      traverse("", i, j);
+      traverse('', i, j);
     }
   }
-  found = [...new Set(found)];
-  found.sort((a, b) => b.length - a.length);
-  document.getElementById("answers").innerHTML = found.join("<br>");
+  found = [...new Set(found)]; // uniqueify
+  found.sort((a, b) => b.length - a.length || a.localeCompare(b)); // sort by length and then alphabetically
+  document.getElementById('answers').innerHTML = found.join('<br>');
 }
 
 function traverse(prefix, i, j) {
-  // Dont go off the grid
+  // Don't go off the grid
   if (i < 0 || i > 3 || j < 0 || j > 3) {
     return;
   }
-  // Cant reuse letters
+  // Don't reuse letters
   if (visited[i][j]) {
     return;
   }
-  const s = (prefix + rack[i][j]).toUpperCase();
+  const s = prefix + rack[i][j];
   if (isWord(s) && s.length > 3) {
     found.push(s);
   }
@@ -236,10 +241,4 @@ function traverse(prefix, i, j) {
   }
 }
 
-rattle();
-// console.log(words.length);
-// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
-// console.log(`isWord(ARDVARK) ${isWord('ARDVARK')})`)
-// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
-// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
-// console.log(`isWord(AARDVARK) ${isWord('AARDVARK')})`)
+shake();
