@@ -30,7 +30,6 @@ const visited = [
 ];
 let found = [];
 const ctx = document.getElementById("canvas").getContext("2d");
-const flipCubes = true; // switch to control whether cubes can be sideways or upside down
 
 // Display rack to screen
 function display() {
@@ -46,61 +45,84 @@ function display() {
   let y = gap;
   rack.forEach((row) => {
     row.forEach((letter) => {
-      ctx.strokeStyle = "white";
-      ctx.fillStyle = "white";
-      roundRect(ctx, x, y, cube, cube, 5, true, false);
-      ctx.fillStyle = "black";
-      let yoffset = cube - 10;
-      if (letter === "Qu") {
-        ctx.font = "bold 30px helvetica";
-        yoffset = cube - 15;
-      } else {
-        ctx.font = "bold 40px helvetica";
-      }
-      const xoffset = (cube - ctx.measureText(letter).width) / 2;
-
-      // rotate cube text in a random orientation
-      if (flipCubes) {
-        ctx.save();
-        switch (randomInt(4)) {
-          case 0:
-            // no rotation
-            ctx.translate(x, y);
-            break;
-          case 1:
-            // 90 degress tilt left
-            ctx.translate(x, y + cube);
-            ctx.rotate(-Math.PI / 2);
-            break;
-          case 2:
-            // upside down
-            ctx.translate(x + cube, y + cube);
-            ctx.rotate(-Math.PI);
-            break;
-          case 3:
-            // 90 degress tilt right
-            ctx.translate(x + cube, y);
-            ctx.rotate(Math.PI / 2);
-            break;
-        }
-        ctx.fillText(letter, xoffset, yoffset);
-        switch (letter) {
-          case 'M':
-          case 'W':
-          case 'Z':
-            ctx.fillRect(15, 43, 20, 4);
-            break;
-        }
-        ctx.restore();
-      } else {
-        ctx.fillText(letter, x + xoffset, y + yoffset);
-      }
-
+      drawCube(letter, x, y, cube);
       x += cube + gap;
     });
     y += cube + gap;
     x = gap;
   });
+}
+
+// pass in degrees and get radians (canvas works in radians)
+function degreesToRadians(d) {
+  return d * Math.PI / 180;
+}
+
+function drawCube(letter, x, y, cube) {
+  // rotate cube text in a random orientation
+  ctx.save();
+  switch (randomInt(4)) {
+    case 0:
+      // no rotation
+      ctx.translate(x, y);
+      ctx.rotate(degreesToRadians(getSlightJiggle()));
+      break;
+    case 1:
+      // 90 degress tilt left
+      ctx.translate(x, y + cube);
+      ctx.rotate(degreesToRadians(-90 + getSlightJiggle()));
+      break;
+    case 2:
+      // upside down
+      ctx.translate(x + cube, y + cube);
+      ctx.rotate(degreesToRadians(180 + getSlightJiggle()));
+      break;
+    case 3:
+      // 90 degress tilt right
+      ctx.translate(x + cube, y);
+      ctx.rotate(degreesToRadians(90 + getSlightJiggle()));
+      break;
+  }
+  ctx.strokeStyle = "white";
+  ctx.fillStyle = "#E0E0E0";
+  roundRect(ctx, 0, 0, cube, cube, 5, true, false);
+  ctx.fillStyle = "white";
+  ctx.beginPath();
+  ctx.arc(25, 25, 24, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.fillStyle = "black";
+  let yoffset = cube - 10;
+  if (letter === "Qu") {
+    ctx.font = "bold 30px helvetica";
+    yoffset = cube - 15;
+  } else {
+    ctx.font = "bold 40px helvetica";
+  }
+  const xoffset = (cube - ctx.measureText(letter).width) / 2;
+  ctx.fillText(letter, xoffset, yoffset);
+  switch (letter) {
+    case 'M':
+    case 'W':
+    case 'Z':
+      ctx.fillRect(15, 43, 20, 4);
+      break;
+  }
+  ctx.restore();
+}
+
+function getSlightJiggle() {
+  switch (randomInt(5)) {
+    case 0:
+      return -2;
+    case 1:
+      return -1;
+    case 2:
+      return 0;
+    case 3:
+      return 1;
+    case 4:
+      return 2;
+  }
 }
 
 function randomInt(max) {
