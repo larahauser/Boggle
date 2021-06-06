@@ -84,6 +84,13 @@ function display() {
             break;
         }
         ctx.fillText(letter, xoffset, yoffset);
+        switch (letter) {
+          case 'M':
+          case 'W':
+          case 'Z':
+            ctx.fillRect(15, 43, 20, 4);
+            break;
+        }
         ctx.restore();
       } else {
         ctx.fillText(letter, x + xoffset, y + yoffset);
