@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Boggle Solver</title>
+  <link href="boggle.css" rel="stylesheet">
+</head>
+
+<body onload="document.getElementById('letters').focus()">
+  <h1>Boggle Solver</h1>
+  <p>Enter 16 letters in the box. Uppercase or lowercase letters are fine. For Qu just enter Q.</p>
+  <input type="text" id="letters">
+  <button onclick="solveletters()">Solve</button>
+  <br><br>
+  <canvas id="canvas" height="250" width="250"></canvas>
+  <br><br>
+  <div id="answers"></div>
+  <script src="words.js"></script>
+  <script src="boggle.js"></script>
+</body>
+
+</html>

@@ -118,6 +118,7 @@ function drawUnderline(letter) {
   }
 }
 
+// slightly jiggle the cubes by 0, 1 or 2 degrees to give a more realistic look
 function getSlightJiggle() {
   switch (randomInt(5)) {
     case 0:
@@ -242,3 +243,17 @@ function traverse(prefix, i, j) {
 }
 
 shake();
+
+// boggle input & solve from here
+function solveletters() {
+  const letters = document.getElementById('letters').value;
+  for (let i = 0; i < rack.length; i++) {
+    for (let j = 0; j < rack.length; j++) {
+      const letter = letters.charAt(i * 4 + j).toUpperCase();
+      rack[i][j] = (letter === 'Q') ? 'QU' : letter;
+    }
+  }
+  document.getElementById('answers').innerHTML = '';
+  display();
+  solve();
+}
