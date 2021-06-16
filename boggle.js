@@ -28,10 +28,11 @@ const visited = [
   [false, false, false, false],
   [false, false, false, false],
 ];
-let found = [];
 const ctx = document.getElementById('canvas').getContext('2d');
 const GAP = 10;
 const CUBE = 50;
+let found = [];
+let intervalId;
 
 // Display rack to screen
 function display() {
@@ -148,6 +149,7 @@ function shake() {
   }
   document.getElementById('answers').innerHTML = '';
   display();
+  startTimer();
 }
 
 // http://js-bits.blogspot.com/2010/07/canvas-rounded-corner-rectangles.html
@@ -242,9 +244,28 @@ function traverse(prefix, i, j) {
   }
 }
 
-shake();
+// 3 minute countdown timer
+function startTimer() {
+  let timer = 180, minutes, seconds;
+  let display = document.querySelector('#time');
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+  display.textContent = '3:00';
+  intervalId = setInterval(function () {
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+    display.textContent = minutes + ":" + seconds;
+    if (--timer < 0) {
+      clearInterval(intervalId);
+      intervalId = null;
+      display.textContent = '';
+    }
+  }, 1000);
+}
 
-// boggle input & solve from here
+// boggle solver
 function solveletters() {
   const letters = document.getElementById('letters').value;
   for (let i = 0; i < rack.length; i++) {
@@ -257,3 +278,5 @@ function solveletters() {
   display();
   solve();
 }
+
+shake();
